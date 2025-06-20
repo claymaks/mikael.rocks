@@ -202,9 +202,9 @@ a:active {
 }
 
 .text-box.caps:nth-of-type(4) {
-    top: 24%;
-    left: 11%;
-    width: 10%;
+    top: 12.6%;
+    left: 7.3%;
+    width: 6.1%;
 }
 
 .text-box.caps-variant {
@@ -213,7 +213,7 @@ a:active {
     line-height: 1.2;
     top: 72%;
     left: 59%;
-    width: 9%;
+    width: 10%;
 }
 
 .cursive {
