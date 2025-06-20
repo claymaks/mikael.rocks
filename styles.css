@@ -244,12 +244,6 @@ a:active {
         height: 40px;
     }
     
-    /* Scale resize anchors for touch devices */
-    .resize-anchor {
-        width: 15px;
-        height: 15px;
-    }
-    
     .text-box {
         font-size: clamp(0.7rem, 2.5vw, 0.9rem);
     }
