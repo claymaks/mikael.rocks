@@ -49,6 +49,32 @@ function initTextBoxes() {
         // Add event listeners
         setupTextBoxEvents(textBox);
     });
+    
+    // Add global click handler to clear selection when clicking outside text boxes
+    document.addEventListener('click', function(e) {
+        // Check if the click was on a text box or its children (including anchors)
+        const clickedTextBox = e.target.closest('.text-box');
+        
+        if (!clickedTextBox) {
+            // Click was outside all text boxes, clear all selections
+            textBoxes.forEach(textBox => {
+                textBox.classList.remove('selected');
+            });
+        }
+    });
+    
+    // Add global touch handler for mobile
+    document.addEventListener('touchstart', function(e) {
+        // Check if the touch was on a text box or its children (including anchors)
+        const touchedTextBox = e.target.closest('.text-box');
+        
+        if (!touchedTextBox) {
+            // Touch was outside all text boxes, clear all selections
+            textBoxes.forEach(textBox => {
+                textBox.classList.remove('selected');
+            });
+        }
+    });
 }
 
 function addResizeAnchors(textBox) {
@@ -79,12 +105,27 @@ function setupTextBoxEvents(textBox) {
         return { clientX: e.clientX, clientY: e.clientY };
     }
     
+    // Helper function to select a text box (show anchors)
+    function selectTextBox() {
+        // Clear selection from all other text boxes
+        document.querySelectorAll('.text-box').forEach(box => {
+            if (box !== textBox) {
+                box.classList.remove('selected');
+            }
+        });
+        // Select this text box
+        textBox.classList.add('selected');
+    }
+    
     // Handler for starting drag operation
     function handleDragStart(e) {
         // Don't start drag if clicking on a resize anchor
         if (e.target.classList.contains('resize-anchor')) {
             return;
         }
+        
+        // Select the text box when touched/clicked
+        selectTextBox();
         
         const coords = getEventCoordinates(e);
         isDragging = true;
@@ -113,6 +154,9 @@ function setupTextBoxEvents(textBox) {
         if (!e.target.classList.contains('resize-anchor')) {
             return;
         }
+        
+        // Select the text box when resizing starts
+        selectTextBox();
         
         const coords = getEventCoordinates(e);
         isResizing = true;

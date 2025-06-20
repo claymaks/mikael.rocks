@@ -157,7 +157,8 @@ a:active {
 }
 
 .text-box:hover .resize-anchor,
-.text-box.resizing .resize-anchor {
+.text-box.resizing .resize-anchor,
+.text-box.selected .resize-anchor {
     opacity: 1;
 }
 
