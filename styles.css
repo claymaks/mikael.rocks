@@ -6,6 +6,9 @@
     --button-border: #dee2e6;
     --button-hover: #f8f9fa;
     --shadow: rgba(0, 0, 0, 0.1);
+
+    --neon-main-color: #333333;
+    --neon-secondary-color: #666;;
 }
 
 [data-theme="dark"] {
@@ -15,6 +18,10 @@
     --button-border: #555555;
     --button-hover: #4a4a4a;
     --shadow: rgba(255, 255, 255, 0.1);
+
+
+    --neon-main-color: #ea02ff;
+    --neon-secondary-color: #00ff55;
 }
 
 * {
@@ -23,9 +30,13 @@
     box-sizing: border-box;
 }
 
+html, body {
+    font-family: 'Tilt Neon', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
 body {
     background-color: var(--bg-color);
-    color: var(--text-color);
+    color: var(--neon-main-color);
     transition: background-color 0.3s ease, color 0.3s ease;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     line-height: 1.6;
@@ -45,7 +56,7 @@ header {
 footer {
     padding: 1rem 0;
     text-align: left;
-    color: var(--text-color);
+    color: var(--neon-main-color);
     position: absolute;
     bottom: 0;
 }
@@ -94,8 +105,29 @@ a:active {
     min-width: 50px;
     min-height: 30px;
     word-wrap: break-word;
-    color: var(--text-color);
+    color: var(--neon-main-color);
     box-sizing: border-box;
+    color: var(--neon-main-color);
+    }
+
+    [data-theme="dark"] .text-box {
+        text-shadow:
+            0 0 4px var(--neon-main-color),
+            0 0 8px var(--neon-main-color),
+            0 0 16px var(--neon-main-color),
+            0 0 32px var(--neon-main-color);
+        color: #fff;
+    }
+
+    /* Use secondary neon color for .text-box.todo in dark mode */
+    [data-theme="dark"] .text-box.todo {
+        text-shadow:
+            0 0 4px var(--neon-secondary-color),
+            0 0 8px var(--neon-secondary-color),
+            0 0 16px var(--neon-secondary-color),
+            0 0 32px var(--neon-secondary-color);
+        color: #fff;
+    }
 }
 
 .text-box:hover {
@@ -141,19 +173,18 @@ a:active {
 
 /* Default positioning for existing text boxes */
 .text-box.todo {
-    top: 10%;
-    left: 70%;
+    top: 2%;
+    left: 34%;
     width: 25%;
     font-size: 0.9rem;
     font-style: italic;
-    color: #666;
 }
 
 .text-box.main {
-    top: 30%;
-    left: 20%;
-    width: 30%;
-    font-size: 1.2rem;
+    top: 14%;
+    left: 29%;
+    width: 37%;
+    font-size: 4rem;
     line-height: 1.4;
 }
 
@@ -165,24 +196,24 @@ a:active {
 }
 
 .text-box.caps:first-of-type {
-    top: 20%;
-    left: 60%;
-    width: 15%;
+    top: 64%;
+    left: 19%;
+    width: 6%;
 }
 
 .text-box.caps:nth-of-type(4) {
-    top: 50%;
-    left: 55%;
-    width: 20%;
+    top: 24%;
+    left: 11%;
+    width: 10%;
 }
 
 .text-box.caps-variant {
     font-weight: bold;
     font-size: 1.8rem;
     line-height: 1.2;
-    top: 60%;
-    left: 25%;
-    width: 20%;
+    top: 72%;
+    left: 59%;
+    width: 9%;
 }
 
 .cursive {
