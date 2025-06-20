@@ -81,8 +81,13 @@ function setupTextBoxEvents(textBox) {
         dragStartY = e.clientY;
         startX = e.clientX;
         startY = e.clientY;
-        startLeft = parseFloat(textBox.style.left) || 0;
-        startTop = parseFloat(textBox.style.top) || 0;
+        
+        const rect = textBox.getBoundingClientRect();
+        const viewportWidth = window.innerWidth;
+        const viewportHeight = window.innerHeight;
+        
+        startLeft = (rect.left / viewportWidth) * 100;
+        startTop = (rect.top / viewportHeight) * 100;
         
         textBox.classList.add('dragging');
         e.preventDefault();
@@ -113,71 +118,77 @@ function setupTextBoxEvents(textBox) {
         e.stopPropagation();
     });
     
+    // Mouse move handler
+    function handleMouseMove(e) {
+        if (isDragging) {
+            const deltaX = e.clientX - startX;
+            const deltaY = e.clientY - startY;
+            
+            const viewportWidth = window.innerWidth;
+            const viewportHeight = window.innerHeight;
+            
+            const newLeft = startLeft + (deltaX / viewportWidth) * 100;
+            const newTop = startTop + (deltaY / viewportHeight) * 100;
+            
+            // Keep within viewport bounds
+            const clampedLeft = Math.max(0, Math.min(newLeft, 95));
+            const clampedTop = Math.max(0, Math.min(newTop, 95));
+            
+            textBox.style.left = clampedLeft + '%';
+            textBox.style.top = clampedTop + '%';
+        }
+        
+        if (isResizing) {
+            handleResize(e, textBox, startX, startY, startLeft, startTop, startWidth, startHeight, currentAnchor);
+        }
+    }
+    
+    // Mouse up handler
+    function handleMouseUp() {
+        if (isDragging) {
+            isDragging = false;
+            textBox.classList.remove('dragging');
+            saveTextBoxState(textBox);
+        }
+        
+        if (isResizing) {
+            isResizing = false;
+            textBox.classList.remove('resizing');
+            saveTextBoxState(textBox);
+        }
+        
+        // Remove global listeners
+        document.removeEventListener('mousemove', handleMouseMove);
+        document.removeEventListener('mouseup', handleMouseUp);
+    }
+    
+    // Add global listeners when dragging/resizing starts
+    textBox.addEventListener('mousedown', () => {
+        document.addEventListener('mousemove', handleMouseMove);
+        document.addEventListener('mouseup', handleMouseUp);
+    });
+    
     // Handle link clicks vs drags
     if (textBox.tagName === 'A') {
         textBox.addEventListener('click', (e) => {
-            const dragDistance = Math.sqrt(
-                Math.pow(e.clientX - dragStartX, 2) + 
-                Math.pow(e.clientY - dragStartY, 2)
-            );
-            
-            // If mouse moved more than 5px, prevent navigation
-            if (dragDistance > 5) {
-                e.preventDefault();
-                return false;
+            // Only check drag distance if we have valid start coordinates
+            if (dragStartX !== undefined && dragStartY !== undefined) {
+                const dragDistance = Math.sqrt(
+                    Math.pow(e.clientX - dragStartX, 2) + 
+                    Math.pow(e.clientY - dragStartY, 2)
+                );
+                
+                // If mouse moved more than 5px, prevent navigation
+                if (dragDistance > 5) {
+                    e.preventDefault();
+                    return false;
+                }
             }
         });
     }
 }
 
-// Global mouse move and up events
-document.addEventListener('mousemove', (e) => {
-    const draggingBox = document.querySelector('.text-box.dragging');
-    const resizingBox = document.querySelector('.text-box.resizing');
-    
-    if (draggingBox) {
-        handleDrag(e, draggingBox);
-    }
-    
-    if (resizingBox) {
-        handleResize(e, resizingBox);
-    }
-});
-
-document.addEventListener('mouseup', () => {
-    const draggingBox = document.querySelector('.text-box.dragging');
-    const resizingBox = document.querySelector('.text-box.resizing');
-    
-    if (draggingBox) {
-        draggingBox.classList.remove('dragging');
-        saveTextBoxState(draggingBox);
-    }
-    
-    if (resizingBox) {
-        resizingBox.classList.remove('resizing');
-        saveTextBoxState(resizingBox);
-    }
-});
-
-function handleDrag(e, textBox) {
-    const deltaX = e.clientX - startX;
-    const deltaY = e.clientY - startY;
-    
-    const viewportWidth = window.innerWidth;
-    const viewportHeight = window.innerHeight;
-    
-    const newLeft = startLeft + (deltaX / viewportWidth) * 100;
-    const newTop = startTop + (deltaY / viewportHeight) * 100;
-    
-    // Keep within viewport bounds
-    const clampedLeft = Math.max(0, Math.min(newLeft, 95));
-    const clampedTop = Math.max(0, Math.min(newTop, 95));
-    
-    textBox.style.left = clampedLeft + '%';
-    textBox.style.top = clampedTop + '%';
-}
-
-function handleResize(e, textBox) {
+function handleResize(e, textBox, startX, startY, startLeft, startTop, startWidth, startHeight, currentAnchor) {
     const deltaX = e.clientX - startX;
     const deltaY = e.clientY - startY;
     

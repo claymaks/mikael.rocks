@@ -95,6 +95,7 @@ a:active {
     min-height: 30px;
     word-wrap: break-word;
     color: var(--text-color);
+    box-sizing: border-box;
 }
 
 .text-box:hover {
@@ -104,6 +105,7 @@ a:active {
 .text-box.dragging {
     opacity: 0.8;
     z-index: 1000;
+    cursor: grabbing;
 }
 
 .text-box.resizing {
