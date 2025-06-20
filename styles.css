@@ -157,7 +157,8 @@ a:active {
 }
 
 .text-box:hover .resize-anchor,
-.text-box.resizing .resize-anchor {
+.text-box.resizing .resize-anchor,
+.text-box.selected .resize-anchor {
     opacity: 1;
 }
 
@@ -270,5 +271,20 @@ a:active {
         top: 65%;
         left: 15%;
         width: 35%;
+    }
+    
+    /* Larger touch targets for resize anchors on mobile */
+    .resize-anchor {
+        width: 15px;
+        height: 15px;
+    }
+    
+    /* Show anchors by default on mobile since there's no hover */
+    .text-box .resize-anchor {
+        opacity: 0.7;
+    }
+    
+    .text-box.resizing .resize-anchor {
+        opacity: 1;
     }
 }
