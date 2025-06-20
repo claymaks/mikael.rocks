@@ -223,22 +223,47 @@ a:active {
 }
 
 /* Responsive design */
+@media (max-width: 1024px) {
+    /* Tablet styles - scale down slightly from desktop */
+    .text-box.main {
+        font-size: clamp(2.5rem, 6vw, 4rem);
+    }
+    
+    .text-box.caps {
+        font-size: clamp(1.5rem, 3vw, 2rem);
+    }
+    
+    .text-box.caps-variant {
+        font-size: clamp(1.3rem, 2.8vw, 1.8rem);
+    }
+}
+
 @media (max-width: 768px) {
     .theme-toggle {
         width: 40px;
         height: 40px;
     }
     
+    /* Scale resize anchors for touch devices */
+    .resize-anchor {
+        width: 15px;
+        height: 15px;
+    }
+    
     .text-box {
-        font-size: 0.9rem;
+        font-size: clamp(0.7rem, 2.5vw, 0.9rem);
+    }
+    
+    .text-box.main {
+        font-size: clamp(1.5rem, 8vw, 3rem);
     }
     
     .text-box.caps {
-        font-size: 1.5rem;
+        font-size: clamp(1rem, 4vw, 1.5rem);
     }
     
     .text-box.caps-variant {
-        font-size: 1.3rem;
+        font-size: clamp(0.9rem, 3.5vw, 1.3rem);
     }
     
     /* Adjust positions for smaller screens */
@@ -270,5 +295,62 @@ a:active {
         top: 65%;
         left: 15%;
         width: 35%;
+    }
+}
+
+/* Additional responsive breakpoint for very small screens */
+@media (max-width: 480px) {
+    /* Larger resize anchors for very small touch screens */
+    .resize-anchor {
+        width: 18px;
+        height: 18px;
+    }
+    
+    .text-box {
+        font-size: clamp(0.6rem, 3vw, 0.8rem);
+    }
+    
+    .text-box.main {
+        font-size: clamp(1.2rem, 10vw, 2.5rem);
+    }
+    
+    .text-box.caps {
+        font-size: clamp(0.8rem, 5vw, 1.2rem);
+    }
+    
+    .text-box.caps-variant {
+        font-size: clamp(0.7rem, 4.5vw, 1rem);
+    }
+    
+    /* Better positioning for very small screens */
+    .text-box.todo {
+        top: 10%;
+        left: 5%;
+        width: 90%;
+        font-size: clamp(0.5rem, 2.5vw, 0.7rem);
+    }
+    
+    .text-box.main {
+        top: 25%;
+        left: 5%;
+        width: 90%;
+    }
+    
+    .text-box.caps:first-of-type {
+        top: 55%;
+        left: 5%;
+        width: 40%;
+    }
+    
+    .text-box.caps:nth-of-type(4) {
+        top: 70%;
+        left: 50%;
+        width: 45%;
+    }
+    
+    .text-box.caps-variant {
+        top: 85%;
+        left: 5%;
+        width: 60%;
     }
 }
