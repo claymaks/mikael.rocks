@@ -69,18 +69,29 @@ function setupTextBoxEvents(textBox) {
     let dragStartX, dragStartY;
     let currentAnchor = null;
     
-    // Mouse down on text box (for dragging)
-    textBox.addEventListener('mousedown', (e) => {
+    // Helper function to get coordinates from mouse or touch events
+    function getEventCoordinates(e) {
+        if (e.touches && e.touches.length > 0) {
+            return { clientX: e.touches[0].clientX, clientY: e.touches[0].clientY };
+        } else if (e.changedTouches && e.changedTouches.length > 0) {
+            return { clientX: e.changedTouches[0].clientX, clientY: e.changedTouches[0].clientY };
+        }
+        return { clientX: e.clientX, clientY: e.clientY };
+    }
+    
+    // Handler for starting drag operation
+    function handleDragStart(e) {
         // Don't start drag if clicking on a resize anchor
         if (e.target.classList.contains('resize-anchor')) {
             return;
         }
         
+        const coords = getEventCoordinates(e);
         isDragging = true;
-        dragStartX = e.clientX;
-        dragStartY = e.clientY;
-        startX = e.clientX;
-        startY = e.clientY;
+        dragStartX = coords.clientX;
+        dragStartY = coords.clientY;
+        startX = coords.clientX;
+        startY = coords.clientY;
         
         const rect = textBox.getBoundingClientRect();
         const viewportWidth = window.innerWidth;
@@ -91,18 +102,23 @@ function setupTextBoxEvents(textBox) {
         
         textBox.classList.add('dragging');
         e.preventDefault();
-    });
+    }
     
-    // Mouse down on resize anchors
-    textBox.addEventListener('mousedown', (e) => {
+    // Mouse and touch down on text box (for dragging)
+    textBox.addEventListener('mousedown', handleDragStart);
+    textBox.addEventListener('touchstart', handleDragStart);
+    
+    // Handler for starting resize operation
+    function handleResizeStart(e) {
         if (!e.target.classList.contains('resize-anchor')) {
             return;
         }
         
+        const coords = getEventCoordinates(e);
         isResizing = true;
         currentAnchor = e.target.dataset.position;
-        startX = e.clientX;
-        startY = e.clientY;
+        startX = coords.clientX;
+        startY = coords.clientY;
         
         const rect = textBox.getBoundingClientRect();
         const viewportWidth = window.innerWidth;
@@ -116,13 +132,19 @@ function setupTextBoxEvents(textBox) {
         textBox.classList.add('resizing');
         e.preventDefault();
         e.stopPropagation();
-    });
+    }
     
-    // Mouse move handler
+    // Mouse and touch down on resize anchors
+    textBox.addEventListener('mousedown', handleResizeStart);
+    textBox.addEventListener('touchstart', handleResizeStart);
+    
+    // Mouse/touch move handler
     function handleMouseMove(e) {
+        const coords = getEventCoordinates(e);
+        
         if (isDragging) {
-            const deltaX = e.clientX - startX;
-            const deltaY = e.clientY - startY;
+            const deltaX = coords.clientX - startX;
+            const deltaY = coords.clientY - startY;
             
             const viewportWidth = window.innerWidth;
             const viewportHeight = window.innerHeight;
@@ -139,11 +161,11 @@ function setupTextBoxEvents(textBox) {
         }
         
         if (isResizing) {
-            handleResize(e, textBox, startX, startY, startLeft, startTop, startWidth, startHeight, currentAnchor);
+            handleResize(coords, textBox, startX, startY, startLeft, startTop, startWidth, startHeight, currentAnchor);
         }
     }
     
-    // Mouse up handler
+    // Mouse/touch up handler
     function handleMouseUp() {
         if (isDragging) {
             isDragging = false;
@@ -160,22 +182,30 @@ function setupTextBoxEvents(textBox) {
         // Remove global listeners
         document.removeEventListener('mousemove', handleMouseMove);
         document.removeEventListener('mouseup', handleMouseUp);
+        document.removeEventListener('touchmove', handleMouseMove);
+        document.removeEventListener('touchend', handleMouseUp);
     }
     
     // Add global listeners when dragging/resizing starts
-    textBox.addEventListener('mousedown', () => {
+    function addGlobalListeners() {
         document.addEventListener('mousemove', handleMouseMove);
         document.addEventListener('mouseup', handleMouseUp);
-    });
+        document.addEventListener('touchmove', handleMouseMove);
+        document.addEventListener('touchend', handleMouseUp);
+    }
     
-    // Handle link clicks vs drags
+    textBox.addEventListener('mousedown', addGlobalListeners);
+    textBox.addEventListener('touchstart', addGlobalListeners);
+    
+    // Handle link clicks vs drags for both mouse and touch
     if (textBox.tagName === 'A') {
-        textBox.addEventListener('click', (e) => {
+        function handleLinkClick(e) {
             // Only check drag distance if we have valid start coordinates
             if (dragStartX !== undefined && dragStartY !== undefined) {
+                const coords = getEventCoordinates(e);
                 const dragDistance = Math.sqrt(
-                    Math.pow(e.clientX - dragStartX, 2) + 
-                    Math.pow(e.clientY - dragStartY, 2)
+                    Math.pow(coords.clientX - dragStartX, 2) + 
+                    Math.pow(coords.clientY - dragStartY, 2)
                 );
                 
                 // If mouse moved more than 5px, prevent navigation
@@ -184,13 +214,16 @@ function setupTextBoxEvents(textBox) {
                     return false;
                 }
             }
-        });
+        }
+        
+        textBox.addEventListener('click', handleLinkClick);
+        textBox.addEventListener('touchend', handleLinkClick);
     }
 }
 
-function handleResize(e, textBox, startX, startY, startLeft, startTop, startWidth, startHeight, currentAnchor) {
-    const deltaX = e.clientX - startX;
-    const deltaY = e.clientY - startY;
+function handleResize(coords, textBox, startX, startY, startLeft, startTop, startWidth, startHeight, currentAnchor) {
+    const deltaX = coords.clientX - startX;
+    const deltaY = coords.clientY - startY;
     
     const viewportWidth = window.innerWidth;
     const viewportHeight = window.innerHeight;
